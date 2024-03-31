@@ -5,6 +5,8 @@ import pg from "pg";
 const app = express();
 const port = 3000;
 
+/* This code snippet is establishing a connection to a PostgreSQL database using the `pg` library in a
+Node.js application. Here's a breakdown of what each part is doing: */
 const db = new pg.Client({
   user: "postgres",
   host: "localhost",
@@ -14,6 +16,12 @@ const db = new pg.Client({
 });
 db.connect();
 
+/* `app.use(bodyParser.urlencoded({ extended: true }));` is setting up middleware in the Express
+application to parse incoming request bodies in URL-encoded format. The `bodyParser.urlencoded({
+extended: true })` middleware parses the incoming request data and makes it available in `req.body`
+object. The `extended: true` option allows for parsing of nested objects in the URL-encoded data.
+This middleware is commonly used to handle form submissions where the form data is sent in the body
+of the request in URL-encoded format. */
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
@@ -22,6 +30,9 @@ let items = [
   // { id: 2, title: "Finish homework" },
 ];
 
+/* This code snippet is defining a route handler for a GET request to the root URL ("/"). When a user
+accesses the root URL of the application, this handler function is executed. Here's a breakdown of
+what it does: */
 app.get("/", async (req, res) => {
   try {
     const result = await db.query("SELECT * FROM items ORDER BY id ASC");
