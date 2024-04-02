@@ -64,6 +64,8 @@ app.post("/edit", async (req, res) => {
   const id = req.body.updatedItemId;
 
   try {
+    /* The line `await db.query("UPDATE items SET title = () WHERE id = ", [item, id]);` is
+    updating a record in the `items` table of the PostgreSQL database. */
     await db.query("UPDATE items SET title = ($1) WHERE id = $2", [item, id]);
     res.redirect("/");
   } catch (err) {
