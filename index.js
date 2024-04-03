@@ -30,18 +30,25 @@ let items = [
   // { id: 2, title: "Finish homework" },
 ];
 
+let monthlyitems = [];
+
 /* This code snippet is defining a route handler for a GET request to the root URL ("/"). When a user
 accesses the root URL of the application, this handler function is executed. Here's a breakdown of
 what it does: */
 app.get("/", async (req, res) => {
   try {
     const result = await db.query("SELECT * FROM items ORDER BY id ASC");
+    const monthlyResult = await db.query("SELECT * FROM monthlyitems ORDER BY id ASC");
     items = result.rows;
-    console.log("Items:::::", items);
+    monthlyitems = monthlyResult.rows;
+    // console.log("Items:::::", items);
+    console.log("monthlyitems:::::", monthlyitems);
 
     res.render("index.ejs", {
       listTitle: "Today",
+      listTitleMonth: "Month",
       listItems: items,
+      listItemsMonthly: monthlyitems
     });
   } catch (err) {
     console.log(err);
@@ -53,6 +60,17 @@ app.post("/add", async (req, res) => {
   // items.push({title: item});
   try {
     await db.query("INSERT INTO items (title) VALUES ($1)", [item]);
+    res.redirect("/");
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+app.post("/addMonthly", async (req, res) => {
+  const item = req.body.newMonthlyItem;
+  // items.push({title: item});
+  try {
+    await db.query("INSERT INTO monthlyitems (title) VALUES ($1)", [item]);
     res.redirect("/");
   } catch (err) {
     console.log(err);
@@ -74,10 +92,21 @@ app.post("/edit", async (req, res) => {
 });
 
 app.post("/delete", async (req, res) => {
+  console.log('DELETE::::', req.body);
+  // console.log(Object.keys(req.body));
   const id = req.body.deleteItemId;
+  const monthly_id = req.body.deleteMonthlyItemId;
+
   try {
-    await db.query("DELETE FROM items WHERE id = $1", [id]);
-    res.redirect("/");
+      await db.query("DELETE FROM items WHERE id = $1", [id]);
+      res.redirect("/");
+    try {
+      await db.query("DELETE FROM monthlyitems WHERE id = $1", [monthly_id]);
+      res.redirect("/");
+    }
+    catch (err){
+      console.log(err);
+    }
   } catch (err) {
     console.log(err);
   }
